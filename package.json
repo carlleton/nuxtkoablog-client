@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "element-ui": "^2.3.7",
     "level-js": "^2.2.4",
     "linvodb3": "^3.25.1",
     "vue": "^2.3.3",
