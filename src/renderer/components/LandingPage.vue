@@ -35,6 +35,9 @@
   export default {
     name: 'landing-page',
     components: { SystemInformation },
+    mounted () {
+      this.$router.push('/login')
+    },
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)

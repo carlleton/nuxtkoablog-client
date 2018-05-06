@@ -22,6 +22,7 @@ npm test
 npm run lint
 
 ```
+[开发记录](./doc/develop.md)
 
 ---
 
