@@ -77,13 +77,6 @@ let webConfig = {
             name: 'fonts/[name].[ext]'
           }
         }
-      },
-      {
-        test:/\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'sass-loader']
-        })
       }
     ]
   },
@@ -114,7 +107,7 @@ let webConfig = {
       '@': path.join(__dirname, '../src/renderer'),
       'vue$': 'vue/dist/vue.esm.js'
     },
-    extensions: ['.js', '.vue', '.json', '.css', '.scss']
+    extensions: ['.js', '.vue', '.json', '.css']
   },
   target: 'web'
 }

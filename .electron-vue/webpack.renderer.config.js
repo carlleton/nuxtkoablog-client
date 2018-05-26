@@ -49,13 +49,6 @@ let rendererConfig = {
         })
       },
       {
-        test:/\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'sass-loader']
-        })
-      },
-      {
         test: /\.html$/,
         use: 'vue-html-loader'
       },
@@ -108,8 +101,7 @@ let rendererConfig = {
             name: 'fonts/[name]--[folder].[ext]'
           }
         }
-      },
-      
+      }
     ]
   },
   node: {

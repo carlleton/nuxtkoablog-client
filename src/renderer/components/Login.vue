@@ -50,7 +50,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .main{
   position: fixed;
   top: 0;
@@ -60,10 +60,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.loginbox{
-  width: 400px;
-  border: 1px solid rgba(0,0,0,0.1);
-  padding: 10px;
+  .loginbox{
+    width: 400px;
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 10px;
+  }
 }
 </style>
