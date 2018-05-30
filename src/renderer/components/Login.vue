@@ -18,6 +18,9 @@
           <el-button type="primary" @click="login">登陆</el-button>
         </el-form-item>
       </el-form>
+      <div>
+        server:　{{filename}}
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +34,14 @@ export default {
         userpass: '123456'
       }
     }
+  },
+  computed: {
+    filename () {
+      return this.$server.getFileName()
+    }
+  },
+  mounted () {
+    //
   },
   methods: {
     async login () {
