@@ -12,7 +12,7 @@
           <el-input v-model="user.username"></el-input>
         </el-form-item>
         <el-form-item label="密码：">
-          <el-input v-model="user.userpass"></el-input>
+          <el-input type="password" v-model="user.userpass"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="login">登陆</el-button>
