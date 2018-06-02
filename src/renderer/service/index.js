@@ -5,14 +5,14 @@ const LinvoDB = require('linvodb3')
 
 let folder = path.join(remote.app.getPath('userData'), '/nuxtkoablog_data')
 
+LinvoDB.defaults.store = {
+  db: require('level-js')
+}
+LinvoDB.dbPath = folder
 const models = [notes]
 let schema = { } // Non-strict always, can be left empty
-let options = {
-  filename: folder,
-  store: {
-    db: require('level-js')
-  }
-}
+let options = {}
+console.log(LinvoDB.defaults)
 
 models.forEach((model) => {
   let Doc = new LinvoDB(model.name, schema, options)
