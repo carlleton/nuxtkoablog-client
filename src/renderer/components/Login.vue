@@ -37,7 +37,7 @@ export default {
   },
   computed: {
     filename () {
-      return this.$server.getFileName()
+      return this.$service.getFileName()
     }
   },
   mounted () {
