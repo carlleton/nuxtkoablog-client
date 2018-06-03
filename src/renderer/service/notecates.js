@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import base from './base'
-let notes = _.extend({
-  name: 'notes',
+let notecates = _.extend({
+  name: 'notecates',
   async list (where) {
     return new Promise((resolve, reject) => {
       this.Doc.find(where, (err, docs) => {
@@ -15,4 +15,4 @@ let notes = _.extend({
   }
 }, base)
 
-export default notes
+export default notecates

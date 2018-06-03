@@ -65,7 +65,8 @@ export default {
   methods: {
     async getCatesData () {
       this.loading = true
-      let catesresult = await axios.get('/api/notecates/list')
+      let catesresult = await this.$service.notecates.list({})
+      console.log(catesresult)
       var data = catesresult.data
       var cates = []
       var temps = []
