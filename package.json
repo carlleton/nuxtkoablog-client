@@ -58,9 +58,12 @@
   "dependencies": {
     "axios": "^0.16.1",
     "element-ui": "^2.3.7",
+    "highlight.js": "^9.12.0",
     "level-js": "^2.2.4",
     "linvodb3": "^3.25.1",
     "lodash": "^4.17.10",
+    "marked": "^0.4.0",
+    "mavon-editor": "^2.6.4",
     "vue": "^2.3.3",
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",

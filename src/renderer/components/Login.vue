@@ -54,6 +54,7 @@ export default {
       if (res.data && res.data.code === 200) {
         this.$message('登陆成功！')
         // 检查数据库，如果没有则将token、用户名、serverurl写入数据库
+        this.$router.push('/')
       } else {
         this.$message.error('登陆失败哦~~')
       }
