@@ -25,11 +25,36 @@ export default {
       })
     })
   },
+  save (docs) {
+    return new Promise((resolve, reject) => {
+      this.Doc.save(docs, (err, docs) => {
+        if (!err) {
+          resolve(docs)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  },
   del (_id) {
     return new Promise((resolve, reject) => {
       this.Doc.remove(_id, {}, (err, numRemoved) => {
         if (!err) {
           resolve(numRemoved)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  },
+  async list (where) {
+    if (!where) {
+      where = {}
+    }
+    return new Promise((resolve, reject) => {
+      this.Doc.find(where, (err, docs) => {
+        if (!err) {
+          resolve(docs)
         } else {
           reject(err)
         }

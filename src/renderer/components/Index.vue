@@ -19,6 +19,7 @@
         </div>
         <!-- 分类 -->
         <Cates ref="cates" :cateid.sync="cateid" :catename.sync="catename"></Cates>
+        <sync></sync>
       </el-aside>
       <el-aside width="250px" class="notes">
         <!-- 笔记列表 -->
@@ -35,6 +36,7 @@
 import Cates from './cates'
 import Notes from './notes'
 import Editor from './editor'
+import sync from './sync'
 
 export default {
   layout: 'admin2',
@@ -69,7 +71,8 @@ export default {
   components: {
     Cates,
     Notes,
-    Editor
+    Editor,
+    sync
   }
 }
 </script>

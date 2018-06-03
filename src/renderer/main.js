@@ -12,9 +12,15 @@ import service from './service'
 import './assets/css/main.css'
 import './assets/css/font-awesome.min.css'
 
+let api = require('./config/api')
+
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
-Vue.http = Vue.prototype.$http = axios
+Vue.http = Vue.prototype.$http = axios.create({
+  baseURL: api.base
+})
+
 Vue.prototype.$service = service
+Vue.prototype.$api = api
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
