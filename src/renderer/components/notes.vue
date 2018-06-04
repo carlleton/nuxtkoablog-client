@@ -57,17 +57,17 @@ export default {
   },
   methods: {
     async getData (cid) {
-      var url = '/api/notes/list'
-      url += '?pageNum=' + this.pageNum
-      url += '&pageSize=' + this.pageSize
+      let where = {}
       if (cid !== undefined) {
-        url += '&cid=' + cid
+        where.cid = cid
       } else if (this.cateid !== 0) {
-        url += '&cid=' + this.cateid
+        where.cid = this.cateid
       }
-      let notesresult = await axios.get(url)
-      this.total = notesresult.data.total
-      this.notes.push(...notesresult.data.data)
+      let order = { updatetime: 1 }
+      let notesresult = await this.$service.notes.list2(where, order, this.pageSize, this.pageNum)
+      console.log(notesresult)
+      this.total = notesresult.total
+      this.notes.push(...notesresult.data)
     },
     loadingnext () {
       this.pageNum = this.pageNum + 1
