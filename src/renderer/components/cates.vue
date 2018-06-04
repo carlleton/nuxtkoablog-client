@@ -65,9 +65,9 @@ export default {
   methods: {
     async getCatesData () {
       this.loading = true
-      let catesresult = await this.$service.notecates.list({})
-      console.log(catesresult)
-      var data = catesresult.data
+      let catesresult = await this.$service.notecates.list2({}, {path: 1})
+      // console.log(catesresult)
+      var data = catesresult
       var cates = []
       var temps = []
       for (var i = 0, n = data.length; i < n; i++) {
