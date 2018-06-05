@@ -75,8 +75,7 @@ export default {
   },
   methods: {
     async getnote (id) {
-      let result = await axios.get('/api/notes/' + id)
-      this.note = result.data
+      this.note = await this.$service.notes.one(id)
       this.isPost = !!this.note.postid
     },
     async save () {

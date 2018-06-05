@@ -21,7 +21,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import contextmenu from './contextmenu'
 
 export default {
@@ -112,21 +111,16 @@ export default {
     // 删除操作
     async do_del (note) {
       this.isloading = true
-      var url = '/api/notes/del'
-      var params = {
-        id: note.id
-      }
-      let res = await axios.post(url, params)
-      if (res.data.rows > 0) {
+      let num = await this.$service.del(note.id)
+      if (num > 0) {
         this.$message({
           type: 'success',
-          message: '删除' + res.data.rows + '条'
+          message: '删除' + num + '条'
         })
         this.pageNum = 1
         this.notes = []
         this.getData()
       } else {
-        console.log(res.data)
         this.$message({
           type: 'error',
           message: '删除失败'

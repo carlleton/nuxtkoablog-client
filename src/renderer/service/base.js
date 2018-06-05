@@ -36,6 +36,17 @@ export default {
       })
     })
   },
+  one (_id) {
+    return new Promise((resolve, reject) => {
+      this.Doc.findOne({_id}, (err, doc) => {
+        if (!err) {
+          resolve(doc)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  },
   del (_id) {
     return new Promise((resolve, reject) => {
       this.Doc.remove(_id, {}, (err, numRemoved) => {

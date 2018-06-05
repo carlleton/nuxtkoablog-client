@@ -207,19 +207,14 @@ export default {
     // 删除操作
     async do_del (cate) {
       this.loading = true
-      var url = '/api/notecates/del'
-      var params = {
-        id: cate.id
-      }
-      let res = await axios.post(url, params)
-      if (res.data.rows > 0) {
+      let rows = await this.$service.notecates.del(cate.id)
+      if (rows > 0) {
         this.$message({
           type: 'success',
-          message: '删除' + res.data.rows + '条'
+          message: '删除' + rows + '条'
         })
         this.getCatesData()
       } else {
-        console.log(res.data)
         this.$message({
           type: 'error',
           message: '删除失败'
@@ -233,21 +228,15 @@ export default {
         cate.edit = false
         return
       }
-      var url = '/api/notecates/update'
-      var params = {
-        catename: cate.catename,
-        id: cate.id
+      let docs = await this.$service.notecates.save(cate)
+      if (docs.length > 0) {
+        this.$message({
+          message: '更新成功',
+          duration: 2000
+        })
+        cate.oldcatename = cate.catename
+        cate.edit = false
       }
-      axios.post(url, params).then((res) => {
-        if (res.data.rows > 0) {
-          this.$message({
-            message: '更新成功',
-            duration: 2000
-          })
-          cate.oldcatename = cate.catename
-          cate.edit = false
-        }
-      })
     },
     changeEdit (cate) {
       if (cate.id !== 0) {
