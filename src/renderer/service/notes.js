@@ -25,7 +25,7 @@ let notes = _.extend({
       })
     })
     let result = await Promise.all([total, data])
-    console.log(result)
+    // console.log(result)
     return {
       total: result[0],
       data: result[1]

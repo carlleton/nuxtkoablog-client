@@ -14,9 +14,13 @@ export default {
       })
     })
   },
-  update (_id, doc) {
+  update (where, update, multi) {
+    let options = {}
+    if (multi) {
+      options.multi = true
+    }
     return new Promise((resolve, reject) => {
-      this.Doc.update(_id, doc, {}, (err, numReplaced) => {
+      this.Doc.update(where, update, options, (err, numReplaced) => {
         if (!err) {
           resolve(numReplaced)
         } else {
@@ -36,9 +40,33 @@ export default {
       })
     })
   },
-  one (_id) {
+  async one (_id, tag) {
+    let params = {}
+    let order = {}
+    if (!_id) {
+      params._id = _id
+    } else {
+      let doc = await this.exec(this.Doc.findOne({_id}))
+      let pid = doc.pid
+      params.pid = pid
+      if (tag === 'up') {
+        params.orderid = {
+          $lt: doc.orderid
+        }
+        order = {
+          orderid: 1
+        }
+      } else if (tag === 'down') {
+        params.orderid = {
+          $gt: doc.orderid
+        }
+        order = {
+          orderid: -1
+        }
+      }
+    }
     return new Promise((resolve, reject) => {
-      this.Doc.findOne({_id}, (err, doc) => {
+      this.Doc.findOne(params).sort(order).exec((err, doc) => {
         if (!err) {
           resolve(doc)
         } else {
@@ -66,6 +94,17 @@ export default {
       this.Doc.find(where, (err, docs) => {
         if (!err) {
           resolve(docs)
+        } else {
+          reject(err)
+        }
+      })
+    })
+  },
+  exec (fun) {
+    return new Promise((resolve, reject) => {
+      fun.exec((err, result) => {
+        if (!err) {
+          resolve(result)
         } else {
           reject(err)
         }

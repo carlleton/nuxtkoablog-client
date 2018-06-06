@@ -39,7 +39,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import contextmenu from './contextmenu'
 
 export default {
@@ -161,19 +160,17 @@ export default {
         return
       }
       this.loading = true
-      var url = '/api/notecates/up'
       var params = {
         id: cate.id
       }
-      let res = await axios.post(url, params)
-      if (res.data.rows > 0) {
+      let res = await this.$service.notecates.up(params)
+      if (res.rows > 0) {
         this.$message({
           type: 'success',
-          message: '更新' + res.data.rows + '条'
+          message: '更新' + res.rows + '条'
         })
         this.getCatesData()
       } else {
-        console.log(res.data)
         this.$message({
           type: 'error',
           message: '无法上移'
@@ -184,19 +181,17 @@ export default {
     // 下移
     async do_down (cate) {
       this.loading = true
-      var url = '/api/notecates/down'
       var params = {
         id: cate.id
       }
-      let res = await axios.post(url, params)
-      if (res.data.rows > 0) {
+      let res = await this.$service.notecates.down(params)
+      if (res.rows > 0) {
         this.$message({
           type: 'success',
-          message: '更新' + res.data.rows + '条'
+          message: '更新' + res.rows + '条'
         })
         this.getCatesData()
       } else {
-        console.log(res.data)
         this.$message({
           type: 'error',
           message: '无法下移'
@@ -228,7 +223,7 @@ export default {
         cate.edit = false
         return
       }
-      let docs = await this.$service.notecates.save(cate)
+      let docs = await this.$service.notecates.update(cate)
       if (docs.length > 0) {
         this.$message({
           message: '更新成功',

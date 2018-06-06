@@ -62,9 +62,9 @@ export default {
       } else if (this.cateid !== 0) {
         where.cid = this.cateid
       }
-      let order = { updatetime: 1 }
+      let order = { updatetime: -1 }
       let notesresult = await this.$service.notes.list2(where, order, this.pageSize, this.pageNum)
-      console.log(notesresult)
+      // console.log(notesresult)
       this.total = notesresult.total
       this.notes.push(...notesresult.data)
     },
