@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import base from './base'
-let usns = _.extend({
+let usns = _.extend(_.extend({}, base), {
   name: 'usns'
-}, base)
+})
 
 export default usns

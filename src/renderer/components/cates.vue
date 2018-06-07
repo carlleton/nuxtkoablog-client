@@ -223,7 +223,7 @@ export default {
         cate.edit = false
         return
       }
-      let docs = await this.$service.notecates.update(cate)
+      let docs = await this.$service.notecates.updatedoc(cate)
       if (docs.length > 0) {
         this.$message({
           message: '更新成功',

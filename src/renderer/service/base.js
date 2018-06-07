@@ -20,7 +20,7 @@ export default {
       options.multi = true
     }
     return new Promise((resolve, reject) => {
-      this.Doc.update(where, update, options, (err, numReplaced) => {
+      this.Doc.update(where, {$set: update}, options, (err, numReplaced) => {
         if (!err) {
           resolve(numReplaced)
         } else {
@@ -43,7 +43,7 @@ export default {
   async one (_id, tag) {
     let params = {}
     let order = {}
-    if (!_id) {
+    if (!tag) {
       params._id = _id
     } else {
       let doc = await this.exec(this.Doc.findOne({_id}))

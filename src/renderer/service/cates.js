@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import base from './base'
-let cates = _.extend({
+let cates = _.extend(_.extend({}, base), {
   name: 'cates',
   async list2 (where, order) {
     if (!where) {
@@ -16,6 +16,6 @@ let cates = _.extend({
       })
     })
   }
-}, base)
+})
 
 export default cates

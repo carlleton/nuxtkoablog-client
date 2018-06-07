@@ -2,7 +2,7 @@ import _ from 'lodash'
 import base from './base'
 import { getTen } from './tools'
 
-let notecates = _.extend({
+let notecates = _.extend(_.extend({}, base), {
   name: 'notecates',
   async list2 (where, order) {
     if (!where) {
@@ -46,7 +46,7 @@ let notecates = _.extend({
       })
     })
   },
-  async update (doc) {
+  async updatedoc (doc) {
     var params = {
       _id: doc.id
     }
@@ -91,19 +91,18 @@ let notecates = _.extend({
         nowpath += ','
       }
       nowpath += getTen(upone.orderid) + ','
-      // var objnow = {
-      //   id: nowone.id,
-      //   path: nowpath,
-      //   orderid: upone.orderid
-      // }
-      // await this.Doc.update({_id: id}, objnow)
+      var objnow = {
+        id: nowone.id,
+        path: nowpath,
+        orderid: upone.orderid
+      }
+      await this.update({_id: id}, objnow)
       let regex = new RegExp((nowone.pidpath || '') + getTen(nowone.id) + ',')
-      console.log(regex)
       let res1 = await this.list({pidpath: { $regex: regex }})
-      // for (let item of res1) {
-      //   item.path = item.path.replace(nowone.path, nowpath)
-      //   await this.save(item)
-      // }
+      for (let item of res1) {
+        item.path = item.path.replace(nowone.path, nowpath)
+        await this.save(item)
+      }
 
       var uppath = upone.path
       uppath = uppath.substr(0, uppath.lastIndexOf(','))
@@ -112,25 +111,22 @@ let notecates = _.extend({
         uppath += ','
       }
       uppath += getTen(nowone.orderid) + ','
-      // var objup = {
-      //   path: uppath,
-      //   orderid: nowone.orderid
-      // }
-      // await this.update({_id: upone.id}, objup)
+      var objup = {
+        path: uppath,
+        orderid: nowone.orderid
+      }
+      await this.update({_id: upone.id}, objup)
       regex = new RegExp((upone.pidpath || '') + getTen(upone.id) + ',')
-      console.log(regex)
       let res2 = await this.list({pidpath: { $regex: regex }})
-      // for (let item of res2) {
-      //   item.path = item.path.replace(upone.path, uppath)
-      //   await this.save(item)
-      // }
-      console.log(res1)
-      console.log(res2)
+      for (let item of res2) {
+        item.path = item.path.replace(upone.path, uppath)
+        await this.save(item)
+      }
       return {
         rows: 2 + res1.length + res2.length
       }
     }
   }
-}, base)
+})
 
 export default notecates

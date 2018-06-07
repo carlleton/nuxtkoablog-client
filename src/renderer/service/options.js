@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import base from './base'
-let notes = _.extend({
+let notes = _.extend(_.extend({}, base), {
   name: 'options',
   async get (name) {
     return new Promise((resolve, reject) => {
@@ -44,6 +44,6 @@ let notes = _.extend({
       })
     })
   }
-}, base)
+})
 
 export default notes

@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import base from './base'
-let notes = _.extend({
+let notes = _.extend(_.extend({}, base), {
   name: 'notes',
   async list2 (where, order, pageSize, pageNum) {
     if (!where) {
@@ -31,6 +31,6 @@ let notes = _.extend({
       data: result[1]
     }
   }
-}, base)
+})
 
 export default notes
