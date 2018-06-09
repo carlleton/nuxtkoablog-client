@@ -126,6 +126,61 @@ let notecates = _.extend(_.extend({}, base), {
         rows: 2 + res1.length + res2.length
       }
     }
+  },
+  async down (doc) {
+    var id = doc.id
+    var upone = await this.one(id, 'down')
+    if (!upone) {
+      return {
+        rows: 0
+      }
+    } else {
+      var nowone = await this.one(id)
+
+      var nowpath = nowone.path
+      nowpath = nowpath.substr(0, nowpath.lastIndexOf(','))
+      nowpath = nowpath.substr(0, nowpath.lastIndexOf(','))
+      if (nowpath) {
+        nowpath += ','
+      }
+      nowpath += getTen(upone.orderid) + ','
+      var objnow = {
+        id: nowone.id,
+        path: nowpath,
+        orderid: upone.orderid
+      }
+      await this.update({_id: id}, objnow)
+      let regex = new RegExp((nowone.pidpath || '') + getTen(nowone.id) + ',')
+      let res1 = await this.list({pidpath: { $regex: regex }})
+      for (let item of res1) {
+        item.path = item.path.replace(nowone.path, nowpath)
+        await this.save(item)
+      }
+
+      var uppath = upone.path
+      uppath = uppath.substr(0, uppath.lastIndexOf(','))
+      uppath = uppath.substr(0, uppath.lastIndexOf(','))
+      if (uppath) {
+        uppath += ','
+      }
+      uppath += getTen(nowone.orderid) + ','
+      var objup = {
+        id: upone.id,
+        path: uppath,
+        orderid: nowone.orderid
+      }
+      await this.update({_id: upone.id}, objup)
+      regex = new RegExp((upone.pidpath || '') + getTen(upone.id) + ',')
+      let res2 = await this.list({pidpath: { $regex: regex }})
+      for (let item of res2) {
+        item.path = item.path.replace(upone.path, uppath)
+        await this.save(item)
+      }
+
+      return {
+        rows: 2 + res1.length + res2.length
+      }
+    }
   }
 })
 

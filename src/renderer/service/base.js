@@ -54,14 +54,14 @@ export default {
           $lt: doc.orderid
         }
         order = {
-          orderid: 1
+          orderid: -1
         }
       } else if (tag === 'down') {
         params.orderid = {
           $gt: doc.orderid
         }
         order = {
-          orderid: -1
+          orderid: 1
         }
       }
     }

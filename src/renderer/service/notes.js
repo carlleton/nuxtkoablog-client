@@ -16,7 +16,7 @@ let notes = _.extend(_.extend({}, base), {
       })
     })
     let data = new Promise((resolve, reject) => {
-      this.Doc.find(where).sort(order).exec((err, docs) => {
+      this.Doc.find(where).sort(order).skip((pageNum - 1) * pageSize).limit(pageSize).exec((err, docs) => {
         if (!err) {
           resolve(docs)
         } else {
