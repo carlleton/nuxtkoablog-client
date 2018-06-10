@@ -2,7 +2,6 @@
   <div class="form">
     <div class="formtit">
       <el-input size="small" placeholder="标签" class="inputtags" v-model="note.tags"></el-input>
-      <el-checkbox class="ispost" v-model="isPost">发布到post</el-checkbox>
       <div class="rightbtn">
         <i class="fa fa-edit" title="编辑" v-show="act=='show'" @click="actchange('edit')"></i>
         <i class="fa fa-eye" title="查看" v-show="act!='show'" @click="actchange('show')"></i>
@@ -18,7 +17,6 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/dark.css'
 import '../assets/css/yeh-md-theme.css'
@@ -41,12 +39,10 @@ export default {
   props: ['cateid', 'noteid', 'act'],
   data () {
     return {
-      isPost: false,
       note: {
         tags: '',
         title: '',
         content: '',
-        postid: '',
         addtime: new Date(),
         id: 0
       }
@@ -76,7 +72,6 @@ export default {
   methods: {
     async getnote (id) {
       this.note = await this.$service.notes.one(id)
-      this.isPost = !!this.note.postid
     },
     async save () {
       var params = {
@@ -84,17 +79,14 @@ export default {
         content: this.note.content,
         cid: this.note.cid,
         tags: this.note.tags,
-        postid: this.note.postid,
         addtime: new Date(this.note.addtime).getTime(),
-        id: this.note.id
+        id: this.note.id || ''
       }
-      var url = ''
-      var notedata
       if (this.note.id === 0) {
-        url = '/api/notes/add'
-        notedata = await axios.post(url, params)
-        if (notedata.data.id) {
-          this.note.id = notedata.data.id
+        let notedata = await this.$service.notes.add(params)
+        if (notedata._id) {
+          this.note.id = notedata._id
+          await this.$serivce.notes.update({_id: notedata._id}, {id: notedata._id})
           this.$message({
             message: '添加成功',
             duration: 2000,
@@ -104,14 +96,10 @@ export default {
               this.$emit('updatenotes')
             }
           })
-          if (this.isPost) {
-            this.addPost(this.note.id, params)
-          }
         }
       } else {
-        url = '/api/notes/update'
-        notedata = await axios.post(url, params)
-        if (notedata.data.rows > 0) {
+        let num = await this.$service.notes.update({_id: this.note.id}, params)
+        if (num > 0) {
           this.$message({
             message: '更新成功',
             duration: 2000,
@@ -120,80 +108,16 @@ export default {
               this.$emit('updatenotes')
             }
           })
-          if (this.isPost) {
-            if (!this.note.postid) {
-              this.addPost(this.note.id, params)
-            } else {
-              this.updatePost(this.note.postid, params)
-            }
-          } else if (this.note.postid) {
-            this.deletePost(this.note.postid)
-            url = '/api/notes/update'
-            params = {
-              id: this.note.id,
-              postid: 0
-            }
-            notedata = await axios.post(url, params)
-          }
         }
-      }
-    },
-    async addPost (noteid, params) {
-      params.cid = ''
-      params.noteid = noteid
-      var url = '/api/posts/add'
-      var postdata = await axios.post(url, params)
-      if (postdata.data.id) {
-        this.note.postid = postdata.data.id
-        url = '/api/notes/update'
-        params.postid = this.note.postid
-        var notedata = await axios.post(url, params)
-        if (notedata.data.rows > 0) {
-          this.$message({
-            message: '添加到post成功',
-            duration: 2000
-          })
-        }
-      }
-    },
-    async updatePost (postid, params) {
-      var url = '/api/posts/update'
-      params = {
-        id: postid,
-        title: params.title,
-        content: params.content,
-        tags: params.tags
-      }
-      var postdata = await axios.post(url, params)
-      if (postdata.data.rows > 0) {
-        this.$message({
-          message: '更新到post成功',
-          duration: 2000
-        })
-      }
-    },
-    async deletePost (postid) {
-      var url = '/api/posts/del'
-      var params = {
-        id: postid
-      }
-      var postdata = await axios.post(url, params)
-      if (postdata.data.rows > 0) {
-        this.$message({
-          message: '删除post成功',
-          duration: 2000
-        })
       }
     },
     doadd () {
       this.$emit('update:act', 'add')
       this.note.id = 0
       this.note.tags = ''
-      this.note.postid = ''
       this.note.title = ''
       this.note.content = ''
       this.note.addtime = new Date()
-      this.isPost = false
     },
     actchange (tag) {
       this.$emit('update:act', tag)
