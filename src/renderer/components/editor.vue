@@ -78,15 +78,16 @@ export default {
         title: this.note.title,
         content: this.note.content,
         cid: this.note.cid,
-        tags: this.note.tags,
+        tags: this.note.tags || '',
         addtime: new Date(this.note.addtime).getTime(),
+        updatetime: Date.now(),
         id: this.note.id || ''
       }
-      if (this.note.id === 0) {
+      if (!this.note.id) {
         let notedata = await this.$service.notes.add(params)
         if (notedata._id) {
           this.note.id = notedata._id
-          await this.$serivce.notes.update({_id: notedata._id}, {id: notedata._id})
+          await this.$service.notes.update({_id: notedata._id}, {id: notedata._id})
           this.$message({
             message: '添加成功',
             duration: 2000,

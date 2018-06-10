@@ -111,7 +111,7 @@ export default {
     // 删除操作
     async do_del (note) {
       this.isloading = true
-      let num = await this.$service.del(note.id)
+      let num = await this.$service.notes.del(note.id)
       if (num > 0) {
         this.$message({
           type: 'success',

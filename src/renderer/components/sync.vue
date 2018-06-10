@@ -93,7 +93,7 @@ export default {
       console.log('同步结束')
       setTimeout(() => {
         this.isSync = false
-      }, 5 * 1000)
+      }, 2 * 1000)
     }
   }
 }
