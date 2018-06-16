@@ -21,7 +21,10 @@ let notes = _.extend(_.extend({}, base), {
     return new Promise((resolve, reject) => {
       this.Doc.findOne({name}, (err, doc) => {
         if (!err && !doc) {
+          let id = this.nextId()
           this.Doc.save({
+            _id: id,
+            id,
             name,
             value: val
           }, (err, docs) => {

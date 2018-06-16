@@ -87,7 +87,6 @@ export default {
         let notedata = await this.$service.notes.add(params)
         if (notedata._id) {
           this.note.id = notedata._id
-          await this.$service.notes.update({_id: notedata._id}, {id: notedata._id})
           this.$message({
             message: '添加成功',
             duration: 2000,

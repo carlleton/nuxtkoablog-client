@@ -1,9 +1,16 @@
+let snowflake = require('node-snowflake').Snowflake
 export default {
   Doc: null,
   init (_Doc) {
     this.Doc = _Doc
   },
+  nextId () {
+    let id = snowflake.nextId()
+    return id
+  },
   add (doc) {
+    doc.id = this.nextId()
+    doc._id = doc.id
     return new Promise((resolve, reject) => {
       this.Doc.insert(doc, (err, newDoc) => {
         if (err) {
@@ -30,6 +37,23 @@ export default {
     })
   },
   save (docs) {
+    if (docs instanceof Array) {
+      docs.forEach((item) => {
+        if (!item._id) {
+          if (!item.id) {
+            item.id = this.nextId()
+          }
+          item._id = item.id
+        }
+      })
+    } else {
+      if (!docs._id) {
+        if (!docs.id) {
+          docs.id = this.nextId()
+        }
+        docs._id = docs.id
+      }
+    }
     return new Promise((resolve, reject) => {
       this.Doc.save(docs, (err, docs) => {
         if (!err) {

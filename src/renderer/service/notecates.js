@@ -36,6 +36,8 @@ let notecates = _.extend(_.extend({}, base), {
       }
     }
     doc.path += getTen(doc.orderid) + ','
+    doc.id = this.nextId()
+    doc._id = doc.id
     return new Promise((resolve, reject) => {
       this.Doc.insert(doc, (err, newDoc) => {
         if (err) {
