@@ -27,7 +27,7 @@ let schema = { } // Non-strict always, can be left empty
 for (let i in models) {
   let model = models[i]
   let Doc = new LinvoDB(model.name, schema, {})
-  model.init(Doc)
+  model.init(Doc, usns)
 }
 
 function getFileName () {

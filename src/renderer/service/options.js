@@ -7,7 +7,7 @@ let notes = _.extend(_.extend({}, base), {
       this.Doc.find({name}, (err, docs) => {
         if (!err) {
           if (docs.length > 0) {
-            resolve(docs[0].value)
+            resolve(docs[0].content)
           } else {
             resolve('')
           }
@@ -20,7 +20,7 @@ let notes = _.extend(_.extend({}, base), {
   async set (name, val) {
     return new Promise((resolve, reject) => {
       this.Doc.findOne({name}, (err, doc) => {
-        if (!err && !doc) {
+        if (err || !doc) {
           let id = this.nextId()
           this.Doc.save({
             _id: id,

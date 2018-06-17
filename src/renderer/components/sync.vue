@@ -8,6 +8,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 let state = require('../config/state')
 export default {
   data () {
@@ -38,11 +39,23 @@ export default {
       console.log('notes.length', notes.length)
     },
     async do_sync () {
+      let models = {
+        1: this.$service.cates,
+        2: this.$service.notecates,
+        3: this.$service.notes,
+        4: this.$service.posts
+      }
+
       this.isSync = true
       console.log('开始同步')
+      let lastusn = await this.$service.options.get('lastusn')
+      if (lastusn === '' || !lastusn) {
+        lastusn = 0
+        await this.$service.options.set('lastusn', 0)
+      }
       // 获取服务器内容
       this.percent = 0
-      let url = this.$api.sync_state + '?usn=0'
+      let url = this.$api.sync_state + '?usn=' + lastusn
       let res = await this.$http.get(url)
       if (res.error) {
         this.percent = 100
@@ -51,19 +64,41 @@ export default {
         }, 2 * 1000)
         return
       }
+      lastusn = res.maxusn
+      // 获取最新的usns，更新usns,cates,notecates
       let usns = res.data.usns
+      let usnids = usns.map(item => item._id)
+      let hackusns = await this.$service.usns.list({
+        deal: 0,
+        _id: {
+          $in: usnids
+        }
+      })
+      for (let usn of hackusns) {
+        let model = models[usn.tag]
+        await model.copy(usn.tagid)
+      }
       let cates = res.data.cates
       let notecates = res.data.notecates
-      this.percent += 1
-      await this.$service.usns.save(usns)
-      this.percent += 4
-      await this.$service.cates.save(cates)
       this.percent += 2
-      await this.$service.notecates.save(notecates)
+      await this.$service.usns.save(usns, true)
       this.percent += 3
-      let postids = usns.filter(item => item.tag === state.tableids['posts']).map(item => item.tagid)
-      let noteids = usns.filter(item => item.tag === state.tableids['notes']).map(item => item.tagid)
+      await this.$service.cates.save(cates, true)
+      this.percent += 2
+      await this.$service.notecates.save(notecates, true)
+      this.percent += 3
+      // 删除操作
+      let delusns = usns.filter(item => item.state === 0)
+      for (let usn of delusns) {
+        let model = models[usn.tag]
+        await model.del(usn.tagid, true)
+      }
+      this.percent += 3
+      // 更新posts,notes
+      let postids = usns.filter(item => item.tag === state.tableids['posts'] && item.state !== 0).map(item => item.tagid)
+      let noteids = usns.filter(item => item.tag === state.tableids['notes'] && item.state !== 0).map(item => item.tagid)
       let alllentgh = postids.length + noteids.length
+      
       for (let i = postids.length - 1; i >= 0; i--) {
         let ids = []
         for (;i >= 0 && ids.length < 5; i--) {
@@ -72,8 +107,8 @@ export default {
         let url = this.$api.sync_post + '?ids=' + ids.join(',')
         let res = await this.$http.get(url)
         if (!res.error) {
-          await this.$service.posts.save(res.data)
-          this.percent += ids.length * 90 / alllentgh
+          await this.$service.posts.save(res.data, true)
+          this.percent += ids.length * 57 / alllentgh
         }
       }
       for (let i = noteids.length - 1; i >= 0; i--) {
@@ -84,10 +119,40 @@ export default {
         let url = this.$api.sync_note + '?ids=' + ids.join(',')
         let res = await this.$http.get(url)
         if (!res.error) {
-          await this.$service.notes.save(res.data)
-          this.percent += ids.length * 90 / alllentgh
+          await this.$service.notes.save(res.data, true)
+          this.percent += ids.length * 57 / alllentgh
         }
       }
+      
+      // 上传更新和新建、删除数据
+      let upusns = await this.$service.usns.list({
+        deal: 0
+      })
+      if (upusns.length > 0) {
+        for (let usn of upusns) {
+          let model = models[usn.tag]
+          usn.obj = await model.one(usn.tagid)
+        }
+        url = this.$api.sync_up
+        res = await this.$http.post(url, {
+          usns: upusns
+        })
+        this.percent += 20
+        if (res.maxusn) {
+          lastusn = res.maxusn
+          for (let usn of upusns) {
+            await this.$service.usns.update({
+              _id: usn._id
+            }, {
+              usn: lastusn,
+              deal: 1,
+              state: 1
+            }, true, true)
+          }
+        }
+      }
+      await this.$service.options.set('lastusn', lastusn)
+
       // 结束时
       this.percent = 100
       console.log('同步结束')

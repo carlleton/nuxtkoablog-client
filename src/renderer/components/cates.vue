@@ -72,7 +72,7 @@ export default {
       for (var i = 0, n = data.length; i < n; i++) {
         data[i].edit = false
         data[i].oldcatename = data[i].catename
-        if (data[i].pid === 0) {
+        if (data[i].pid === '0') {
           cates.push(data[i])
         } else {
           var maxi = cates.length - 1
@@ -92,6 +92,17 @@ export default {
         catename: '最新'
       }].concat(cates.concat(temps))
       this.loading = false
+
+      // let lastusn = await this.$service.options.get('lastusn')
+      // if (lastusn === '' || !lastusn) {
+      //   lastusn = 0
+      //   await this.$service.options.set('lastusn', 0)
+      // }
+      // let tables = ['usns', 'posts', 'cates', 'notes', 'notecates', 'options']
+      // for (let table of tables) {
+      //   let nums = await this.$service[table].empty()
+      //   console.log(table, nums)
+      // }
     },
     // 选择某一项
     selectcate (cate) {

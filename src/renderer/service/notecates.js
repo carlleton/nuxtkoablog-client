@@ -24,25 +24,26 @@ let notecates = _.extend(_.extend({}, base), {
     }
     if (doc.pid !== 0) {
       var pCates = await this.exec(this.Doc.find({id: doc.pid}).limit(1))
-      if (pCates.result.length > 0) {
-        doc.path = pCates.result[0].path
-        doc.pidpath = pCates.result[0].idpath + getTen(pCates.result[0].id) + ','
+      if (pCates.length > 0) {
+        doc.path = pCates[0].path
+        doc.pidpath = pCates[0].idpath + pCates[0].id + ','
       }
     }
     if (!doc.orderid) {
       let maxCate = await this.exec(this.Doc.find({pid: doc.pid}).sort({ orderid: 1 }).limit(1))
-      if (maxCate.result.length > 0) {
-        doc.orderid = maxCate.result[0].orderid + 1
+      if (maxCate.length > 0) {
+        doc.orderid = maxCate[0].orderid + 1
       }
     }
     doc.path += getTen(doc.orderid) + ','
     doc.id = this.nextId()
     doc._id = doc.id
     return new Promise((resolve, reject) => {
-      this.Doc.insert(doc, (err, newDoc) => {
+      this.Doc.insert(doc, async (err, newDoc) => {
         if (err) {
           reject(err)
         } else {
+          await this.usns.syncadd(this.name, doc.id)
           resolve(newDoc)
         }
       })
@@ -60,15 +61,16 @@ let notecates = _.extend(_.extend({}, base), {
       params.path = ''
       if (doc.pid !== 0) {
         var pCates = await this.exec(this.Doc.find({id: doc.pid}).limit(1))[0]
-        if (pCates.result.length > 0) {
-          params.path = pCates.result[0].path
+        if (pCates.length > 0) {
+          params.path = pCates[0].path
         }
       }
       params.path += getTen(params.orderid) + ','
     }
     return new Promise((resolve, reject) => {
-      this.Doc.save(params, (err, docs) => {
+      this.Doc.save(params, async (err, docs) => {
         if (!err) {
+          await this.usns.syncupdate(this.name, doc.id)
           resolve(docs)
         } else {
           reject(err)
@@ -99,7 +101,7 @@ let notecates = _.extend(_.extend({}, base), {
         orderid: upone.orderid
       }
       await this.update({_id: id}, objnow)
-      let regex = new RegExp((nowone.pidpath || '') + getTen(nowone.id) + ',')
+      let regex = new RegExp((nowone.pidpath || '') + nowone.id + ',')
       let res1 = await this.list({pidpath: { $regex: regex }})
       for (let item of res1) {
         item.path = item.path.replace(nowone.path, nowpath)
@@ -118,7 +120,7 @@ let notecates = _.extend(_.extend({}, base), {
         orderid: nowone.orderid
       }
       await this.update({_id: upone.id}, objup)
-      regex = new RegExp((upone.pidpath || '') + getTen(upone.id) + ',')
+      regex = new RegExp((upone.pidpath || '') + upone.id + ',')
       let res2 = await this.list({pidpath: { $regex: regex }})
       for (let item of res2) {
         item.path = item.path.replace(upone.path, uppath)
@@ -152,7 +154,7 @@ let notecates = _.extend(_.extend({}, base), {
         orderid: upone.orderid
       }
       await this.update({_id: id}, objnow)
-      let regex = new RegExp((nowone.pidpath || '') + getTen(nowone.id) + ',')
+      let regex = new RegExp((nowone.pidpath || '') + nowone.id + ',')
       let res1 = await this.list({pidpath: { $regex: regex }})
       for (let item of res1) {
         item.path = item.path.replace(nowone.path, nowpath)
@@ -172,7 +174,7 @@ let notecates = _.extend(_.extend({}, base), {
         orderid: nowone.orderid
       }
       await this.update({_id: upone.id}, objup)
-      regex = new RegExp((upone.pidpath || '') + getTen(upone.id) + ',')
+      regex = new RegExp((upone.pidpath || '') + upone.id + ',')
       let res2 = await this.list({pidpath: { $regex: regex }})
       for (let item of res2) {
         item.path = item.path.replace(upone.path, uppath)

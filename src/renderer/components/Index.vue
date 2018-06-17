@@ -7,6 +7,9 @@
         <el-button plain size="mini" style="margin-left:10px;" @click="addNote">添加笔记</el-button>
         <router-link to="/systeminfo">systeminfo</router-link>
       </div>
+      <div class="syncbox">
+        <sync></sync>
+      </div>
       <div class="author">
         <a class="logout" @click="logout()">退出</a>
       </div>
@@ -19,7 +22,6 @@
         </div>
         <!-- 分类 -->
         <Cates ref="cates" :cateid.sync="cateid" :catename.sync="catename"></Cates>
-        <sync></sync>
       </el-aside>
       <el-aside width="250px" class="notes">
         <!-- 笔记列表 -->
@@ -92,6 +94,10 @@ export default {
 .admin_tit .page{
   font-size: 14px;
   margin-left: 20px;
+}
+.syncbox{
+  float: left;
+  width: 300px;
 }
 .author{
   float: right;
