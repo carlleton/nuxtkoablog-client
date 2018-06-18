@@ -29,14 +29,21 @@ export default {
     async init () {
       let usns = await this.$service.usns.list()
       console.log('usns.length,', usns.length)
+
       let cates = await this.$service.cates.list()
       console.log('cates.length,', cates.length)
+      
       let notecates = await this.$service.notecates.list()
       console.log('notecates.length,', notecates.length)
+      
       let posts = await this.$service.posts.list()
       console.log('posts.length,', posts.length)
+      
       let notes = await this.$service.notes.list()
       console.log('notes.length', notes.length)
+
+      let options = await this.$service.options.list()
+      console.log('options.length', options.length)
     },
     async do_sync () {
       let models = {
@@ -64,7 +71,7 @@ export default {
         }, 2 * 1000)
         return
       }
-      lastusn = res.maxusn
+      lastusn = res.data.maxusn
       // 获取最新的usns，更新usns,cates,notecates
       let usns = res.data.usns
       let usnids = usns.map(item => item._id)
@@ -138,8 +145,8 @@ export default {
           usns: upusns
         })
         this.percent += 20
-        if (res.maxusn) {
-          lastusn = res.maxusn
+        if (res.data.maxusn) {
+          lastusn = res.data.maxusn
           for (let usn of upusns) {
             await this.$service.usns.update({
               _id: usn._id

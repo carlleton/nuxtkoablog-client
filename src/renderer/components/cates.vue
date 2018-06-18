@@ -94,6 +94,7 @@ export default {
       this.loading = false
 
       // let lastusn = await this.$service.options.get('lastusn')
+      // console.log(lastusn)
       // if (lastusn === '' || !lastusn) {
       //   lastusn = 0
       //   await this.$service.options.set('lastusn', 0)

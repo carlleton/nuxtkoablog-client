@@ -7,7 +7,7 @@ let notes = _.extend(_.extend({}, base), {
       this.Doc.find({name}, (err, docs) => {
         if (!err) {
           if (docs.length > 0) {
-            resolve(docs[0].content)
+            resolve(docs[0].value)
           } else {
             resolve('')
           }
