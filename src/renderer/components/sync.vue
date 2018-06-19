@@ -44,6 +44,19 @@ export default {
 
       let options = await this.$service.options.list()
       console.log('options.length', options.length)
+
+      let lastusn = await this.$service.options.get('lastusn')
+      console.log('lastusn', lastusn)
+      // if (lastusn === '' || !lastusn) {
+      //   lastusn = 0
+      //   await this.$service.options.set('lastusn', 0)
+      // }
+      // 清空各个表
+      // let tables = ['usns', 'posts', 'cates', 'notes', 'notecates', 'options']
+      // for (let table of tables) {
+      //   let nums = await this.$service[table].empty()
+      //   console.log(table, nums)
+      // }
     },
     async do_sync () {
       let models = {
@@ -147,9 +160,10 @@ export default {
           for (;tempusns.length < 5 && i < uplen; i++) {
             tempusns.push(upusns[i]);
           }
-          res = await this.$http.post(url, {
+          let params = {
             usns: tempusns
-          })
+          }
+          res = await this.$http.post(url, params)
           this.percent += tempusns.length * 20 / uplen;
           if (res.data.maxusn) {
             lastusn = res.data.maxusn
