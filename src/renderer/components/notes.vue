@@ -57,7 +57,7 @@ export default {
   methods: {
     async getData (cid) {
       let where = {}
-      if (cid !== undefined) {
+      if (cid) {
         where.cid = cid
       } else if (this.cateid !== 0) {
         where.cid = this.cateid

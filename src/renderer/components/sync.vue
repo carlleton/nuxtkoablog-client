@@ -136,26 +136,34 @@ export default {
         deal: 0
       })
       if (upusns.length > 0) {
+        let uplen = upusns.length;
         for (let usn of upusns) {
           let model = models[usn.tag]
           usn.obj = await model.one(usn.tagid)
         }
         url = this.$api.sync_up
-        res = await this.$http.post(url, {
-          usns: upusns
-        })
-        this.percent += 20
-        if (res.data.maxusn) {
-          lastusn = res.data.maxusn
-          for (let usn of upusns) {
-            await this.$service.usns.update({
-              _id: usn._id
-            }, {
-              usn: lastusn,
-              deal: 1,
-              state: 1
-            }, true, true)
+        for (let i = 0; i < uplen; i++) {
+          let tempusns = [];
+          for (;tempusns.length < 5 && i < uplen; i++) {
+            tempusns.push(upusns[i]);
           }
+          res = await this.$http.post(url, {
+            usns: tempusns
+          })
+          this.percent += tempusns.length * 20 / uplen;
+          if (res.data.maxusn) {
+            lastusn = res.data.maxusn
+            for (let usn of tempusns) {
+              await this.$service.usns.update({
+                _id: usn._id
+              }, {
+                usn: lastusn,
+                deal: 1,
+                state: 1
+              }, true, true)
+            }
+          }
+
         }
       }
       await this.$service.options.set('lastusn', lastusn)
