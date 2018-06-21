@@ -11,6 +11,7 @@
         <p class="itemtitle" :title="note.title">
           {{note.title}}
         </p>
+        <i class="badge" v-if="note.replay">{{note.replay}}</i>
         <i class="fa fa-cog set" @click="showContextMenu(note)"></i>
       </li>
     </ul>
@@ -134,7 +135,7 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .notestit{
   background-color: #eee;
   border-bottom: 1px solid #ebeff2;
@@ -156,25 +157,39 @@ export default {
   border-bottom: 1px solid #ebeff2;
   padding: 0 0 0 5px;
   display: flex;
-}
-.noteslist li.cur{
-  background-color: #eee;
-}
-.noteslist li:hover{
-  background-color: #eee;
-}
-.noteslist li .set{
-  display: none;
-  float: right;
-  margin-right: 5px;
-  line-height: 30px;
-  opacity: 0.8;
-  z-index: 1;
-  padding: 0 2px;
-  cursor: pointer;
-}
-.noteslist li:hover .set{
-  display: inline-flex;
+  position: relative;
+  .badge{
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px;
+    font-size: 12px;
+    min-width: 12px;
+    height: 12px;
+    border-radius: 12px;
+    text-align: center;
+    color: #fff;
+    float: right;
+    margin-right: 2px;
+    margin-top: 8px;
+  }
+  .set{
+    display: none;
+    float: right;
+    margin-right: 5px;
+    line-height: 30px;
+    opacity: 0.8;
+    z-index: 1;
+    padding: 0 2px;
+    cursor: pointer;
+  }
+  &.cur{
+    background-color: #eee;
+  }
+  &:hover{
+    background-color: #eee;
+    .set{
+      display: inline-flex;
+    }
+  }
 }
 .itemtitle{
   font-size: 16px;

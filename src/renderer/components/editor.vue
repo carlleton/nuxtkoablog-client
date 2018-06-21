@@ -44,6 +44,7 @@ export default {
         title: '',
         content: '',
         addtime: new Date(),
+        replay: 0,
         id: 0
       }
     }
@@ -81,7 +82,8 @@ export default {
         tags: this.note.tags || '',
         addtime: new Date(this.note.addtime).getTime(),
         updatetime: Date.now(),
-        id: this.note.id || ''
+        id: this.note.id || '',
+        replay: this.note.replay || 0
       }
       if (!this.note.id) {
         let notedata = await this.$service.notes.add(params)
@@ -118,6 +120,7 @@ export default {
       this.note.title = ''
       this.note.content = ''
       this.note.addtime = new Date()
+      this.note.replay = 0
     },
     actchange (tag) {
       this.$emit('update:act', tag)
