@@ -1,16 +1,25 @@
 <template>
   <div class="form">
-    <div class="formtit">
-      <el-input size="small" placeholder="标签" class="inputtags" v-model="note.tags"></el-input>
-      <div class="rightbtn">
-        <i class="fa fa-edit" title="编辑" v-show="act=='show'" @click="actchange('edit')"></i>
-        <i class="fa fa-eye" title="查看" v-show="act!='show'" @click="actchange('show')"></i>
-        <i class="fa fa-save" @click="save" title="保存"></i>
+    <template v-if="act=='show'">
+      <h1>{{note.title}}</h1>
+      <p class="btns">
+        <i class="fa fa-edit" title="编辑" @click="actchange('edit')">编辑</i>
+        <i class="fa fa-eye replay" @click="addReplay()">复盘<span>{{note.replay||0}}</span>次</i>
+      </p>
+      <p v-if="note.tags">{{note.tags}}</p>
+      <div class="contentshow md" v-html="markdownhtml"></div>
+    </template>
+    <template v-else>
+      <el-input placeholder="请输入标题" v-model="note.title"></el-input>
+      <div class="formtit">
+        <el-input size="small" placeholder="标签" class="inputtags" v-model="note.tags"></el-input>
       </div>
-    </div>
-    <el-input placeholder="请输入标题" v-model="note.title"></el-input>
-    <div class="contentshow md" v-if="act=='show'" v-html="markdownhtml"></div>
-    <mavon-editor class="editor" v-if="act!='show'" v-model="note.content"></mavon-editor>
+      <div class="btns">
+        <i class="fa fa-undo" title="查看" @click="actchange('show')">返回</i>
+        <i class="fa fa-save" @click="save" title="保存">保存</i>
+      </div>
+      <mavon-editor class="editor" v-if="act!='show'" v-model="note.content"></mavon-editor>
+    </template>
     <div class="nonoteshow" v-if="act=='show' && noteid==0">
       <button @click="$emit('addNote')">添加笔记</button>
     </div>
@@ -122,16 +131,36 @@ export default {
       this.note.addtime = new Date()
       this.note.replay = 0
     },
+    async addReplay () {
+      let _id = this.note.id
+      let replay = this.note.replay || 0
+      replay += 1
+      let num = await this.$service.notes.updateReplay(_id, replay)
+      if (num > 0) {
+        this.$message({
+          message: '更新成功，更新' + num + '条',
+          duration: 2000,
+          onClose: () => {
+            this.note.replay = replay
+            this.$emit('update:act', 'show')
+            this.$emit('updatenotes')
+          }
+        })
+      }
+    },
     actchange (tag) {
       this.$emit('update:act', tag)
     }
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .form{
   height: 100%;
   width: 99%;
+  h1{
+    padding: 0 10px;
+  }
 }
 .inputtags{
   width: 500px;
@@ -139,15 +168,23 @@ export default {
 .ispost{
   margin-left: 10px;
 }
-.rightbtn{
-  float: right;
-  line-height: 35px;
-  margin-right: 10px;
+.formtit{
+  overflow: auto;
 }
-.rightbtn i{
-  cursor: pointer;
-  margin-right: 10px;
+.btns{
   line-height: 35px;
+  margin-right: 10px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  i{
+    cursor: pointer;
+    margin-right: 10px;
+    line-height: 35px;
+    padding: 0 10px;
+  }
+  .replay span{
+    color: #f00;
+  }
 }
 .editor{
   height: calc(100% - 80px);

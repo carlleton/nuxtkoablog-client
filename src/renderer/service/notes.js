@@ -30,6 +30,13 @@ let notes = _.extend(_.extend({}, base), {
       total: result[0],
       data: result[1]
     }
+  },
+  async updateReplay (_id, replay) {
+    return this.update({
+      _id
+    }, {
+      replay
+    })
   }
 })
 

@@ -170,6 +170,7 @@ export default {
     float: right;
     margin-right: 2px;
     margin-top: 8px;
+    font-style: normal;
   }
   .set{
     display: none;
