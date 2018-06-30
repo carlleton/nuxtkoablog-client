@@ -183,10 +183,10 @@ export default {
     cursor: pointer;
   }
   &.cur{
-    background-color: #eee;
+    background-color: #ccc;
   }
   &:hover{
-    background-color: #eee;
+    background-color: #cdc;
     .set{
       display: inline-flex;
     }

@@ -97,7 +97,6 @@ export default {
 }
 .syncbox{
   float: left;
-  width: 300px;
 }
 .author{
   float: right;
