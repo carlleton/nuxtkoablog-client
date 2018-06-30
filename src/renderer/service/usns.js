@@ -20,7 +20,7 @@ let usns = _.extend(_.extend({}, base), {
   async syncadd (name, id) {
     let tag = tableids[name]
     return this.add({
-      tag,
+      tag: tag,
       tagid: id,
       usn: 0,
       updatetime: Date.now(),
@@ -31,7 +31,7 @@ let usns = _.extend(_.extend({}, base), {
   async syncdel (name, id) {
     let tag = tableids[name]
     return this.update({
-      tag,
+      tag: tag,
       tagid: id
     }, {
       state: 0,
@@ -45,7 +45,7 @@ let usns = _.extend(_.extend({}, base), {
       return
     }
     return this.update({
-      tag,
+      tag: tag,
       tagid: id
     }, {
       state: 2,

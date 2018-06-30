@@ -25,7 +25,7 @@
 import contextmenu from './contextmenu'
 
 export default {
-  props: ['cateid', 'noteid', 'catename', 'act'],
+  props: ['cateid', 'catetag', 'noteid', 'catename', 'act'],
   data () {
     return {
       isloading: false,
@@ -60,8 +60,13 @@ export default {
       let where = {}
       if (cid) {
         where.cid = cid
-      } else if (this.cateid !== 0) {
+      } else if (this.cateid !== 0 && this.cateid !== '') {
         where.cid = this.cateid
+      }
+      if (this.catetag === 'copy') {
+        where.title = {
+          $regex: new RegExp('copy')
+        }
       }
       let order = { updatetime: -1 }
       let notesresult = await this.$service.notes.list2(where, order, this.pageSize, this.pageNum)
@@ -113,6 +118,7 @@ export default {
     async do_del (note) {
       this.isloading = true
       let num = await this.$service.notes.del(note.id)
+      console.log(num)
       if (num > 0) {
         this.$message({
           type: 'success',

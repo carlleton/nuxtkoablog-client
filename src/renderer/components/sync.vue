@@ -50,20 +50,26 @@ export default {
       let lastusn = await this.$service.options.get('lastusn')
       console.log('lastusn', lastusn)
 
+
       // usns = await this.$service.usns.update({
-      //   updatetime: {
-      //     $lt: 1524412205952
-      //   }
+      //   // updatetime: {
+      //   //   $lt: 1524412205952
+      //   // }
       // }, {
       //   deal: 0
       // }, true)
       // console.log('set usns', usns)
 
+      // let upusns = await this.$service.usns.list({
+      //   deal: 0
+      // })
+      // console.log(upusns)
+
       // if (lastusn === '' || !lastusn) {
       //   lastusn = 0
       //   await this.$service.options.set('lastusn', 0)
       // }
-      // 清空各个表
+      // /* 清空各个表 */
       // let tables = ['usns', 'posts', 'cates', 'notes', 'notecates', 'options']
       // for (let table of tables) {
       //   let nums = await this.$service[table].empty()
@@ -132,7 +138,7 @@ export default {
         let noteids = usns.filter(item => item.tag === state.tableids['notes'] && item.state !== 0).map(item => item.tagid)
         let alllentgh = postids.length + noteids.length
         
-        for (let i = postids.length - 1; i >= 0; i--) {
+        for (let i = postids.length - 1; i >= 0;) {
           let ids = []
           for (;i >= 0 && ids.length < 5; i--) {
             ids.push(postids[i])
@@ -144,7 +150,7 @@ export default {
             this.percent += ids.length * 57 / alllentgh
           }
         }
-        for (let i = noteids.length - 1; i >= 0; i--) {
+        for (let i = noteids.length - 1; i >= 0;) {
           let ids = []
           for (;i >= 0 && ids.length < 5; i--) {
             ids.push(noteids[i])
@@ -168,7 +174,7 @@ export default {
             usn.obj = await model.one(usn.tagid)
           }
           url = this.$api.sync_up
-          for (let i = 0; i < uplen; i++) {
+          for (let i = 0; i < uplen;) {
             let tempusns = [];
             for (;tempusns.length < 5 && i < uplen; i++) {
               tempusns.push(upusns[i]);
@@ -187,7 +193,7 @@ export default {
                   usn: lastusn,
                   deal: 1,
                   state: 1
-                }, true, true)
+                }, false, true)
               }
             }
   

@@ -2,7 +2,7 @@
   <div class="cates" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
     <ul>
       <li v-for="cate in cates" :key="cate.id">
-        <p :class="{cur:cateid==cate.id}" @click="selectcate(cate)" @contextmenu="showContextMenu(cate)" @dblclick.prevent.stop="changeEdit(cate)">
+        <p :class="{cur:cateid===cate.id}" @click="selectcate(cate)" @contextmenu="showContextMenu(cate)" @dblclick.prevent.stop="changeEdit(cate)">
           <span>
             <template v-if="cate.childs">
               <i class="fa fa-plus-square-o" v-show="!cate.childshow" @click.stop="cate.childshow=true"></i>
@@ -42,7 +42,7 @@
 import contextmenu from './contextmenu'
 
 export default {
-  props: ['cateid', 'catename'],
+  props: ['cateid', 'catename', 'catetag'],
   data () {
     return {
       loading: false,
@@ -90,6 +90,10 @@ export default {
       this.cates = [{
         id: 0,
         catename: '最新'
+      }, {
+        id: '',
+        tag: 'copy',
+        catename: '待处理'
       }].concat(cates.concat(temps))
       this.loading = false
     },
@@ -97,6 +101,7 @@ export default {
     selectcate (cate) {
       this.$emit('update:cateid', cate.id)
       this.$emit('update:catename', cate.catename)
+      this.$emit('update:catetag', cate.tag)
     },
     // 右键菜单
     showContextMenu (cate) {

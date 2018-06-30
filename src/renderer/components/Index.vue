@@ -21,11 +21,11 @@
           笔记本
         </div>
         <!-- 分类 -->
-        <Cates ref="cates" :cateid.sync="cateid" :catename.sync="catename"></Cates>
+        <Cates ref="cates" :cateid.sync="cateid" :catename.sync="catename" :catetag.sync="catetag"></Cates>
       </el-aside>
       <el-aside width="250px" class="notes">
         <!-- 笔记列表 -->
-        <Notes ref="notes" :cateid="cateid" :catename="catename" :act.sync="act" :noteid.sync="noteid"></Notes>
+        <Notes ref="notes" :cateid="cateid" :catename="catename" :catetag="catetag" :act.sync="act" :noteid.sync="noteid"></Notes>
       </el-aside>
       <el-main class="editor">
         <!-- 编辑器 -->
@@ -51,6 +51,7 @@ export default {
     return {
       cateid: 0,
       catename: '最新',
+      catetag: '',
       noteid: 0,
       act: 'show'
     }

@@ -128,7 +128,7 @@ export default {
   },
   del (_id, notUsn) {
     return new Promise((resolve, reject) => {
-      this.Doc.remove(_id, {}, async (err, numRemoved) => {
+      this.Doc.remove({ _id: _id }, {}, async (err, numRemoved) => {
         if (!err) {
           if (!notUsn && this.name !== 'usns' && this.name !== 'options') {
             await this.usns.syncdel(this.name, _id)
