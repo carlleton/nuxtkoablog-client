@@ -1,41 +1,48 @@
 <template>
-  <div class="cates" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
-    <ul>
-      <li v-for="cate in cates" :key="cate.id">
-        <p :class="{cur:cateid===cate.id}" @click="selectcate(cate)" @contextmenu="showContextMenu(cate)" @dblclick.prevent.stop="changeEdit(cate)">
-          <span>
-            <template v-if="cate.childs">
-              <i class="fa fa-plus-square-o" v-show="!cate.childshow" @click.stop="cate.childshow=true"></i>
-              <i class="fa fa-minus-square-o" v-show="cate.childshow" @click.stop="cate.childshow=false"></i>
-            </template>
-            <i class="catename" v-else></i>
-            <template v-if="!cate.edit">
-              {{cate.catename}}
-            </template>
-            <template v-else>
-              <input class="editbox" type="text" v-model="cate.catename" @blur="savename(cate)" @keyup.enter="savename(cate)" />
-            </template>
-          </span>
-          <i class="fa fa-cog set" @click="showContextMenu(cate)" v-if="cate.id!=0"></i>
-        </p>
-          <ul v-if="cate.childs && cate.childs.length > 0" v-show="cate.childshow">
-            <li v-for="child in cate.childs" :key="child.id" @contextmenu="showContextMenu(child)">
-              <p :class="{cur:cateid==child.id}" @click="selectcate(child)">
-              <span @dblclick.prevent="changeEdit(child)">
-                <template v-if="!child.edit">
-                  {{child.catename}}
-                </template>
-                <template v-else>
-                  <input class="editbox" type="text" v-model="child.catename" @blur="savename(child)" @keyup.enter="savename(child)" />
-                </template>
-              </span>
-              <i class="fa fa-cog set" @click="showContextMenu(child)"></i>
-              </p>
-            </li>
-          </ul>
-      </li>
-    </ul>
-    <contextmenu ref="contextmenu" :point="contextmenuData.point" :menus="contextmenuData.menus" :isShow.sync="contextmenuData.isShow"></contextmenu>
+  <div>
+    <div class="catestit">
+      <i class="fa fa-book fa-left"></i>
+      笔记本
+      <i class="fa fa-plus right cateadd" @click="addCate()"></i>
+    </div>
+    <div class="cates" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+      <ul>
+        <li v-for="cate in cates" :key="cate.id">
+          <p :class="{cur:cateid===cate.id}" @click="selectcate(cate)" @contextmenu="showContextMenu(cate)" @dblclick.prevent.stop="changeEdit(cate)">
+            <span>
+              <template v-if="cate.childs">
+                <i class="fa fa-plus-square-o" v-show="!cate.childshow" @click.stop="cate.childshow=true"></i>
+                <i class="fa fa-minus-square-o" v-show="cate.childshow" @click.stop="cate.childshow=false"></i>
+              </template>
+              <i class="catename" v-else></i>
+              <template v-if="!cate.edit">
+                {{cate.catename}}
+              </template>
+              <template v-else>
+                <input class="editbox" type="text" v-model="cate.catename" :ref="'input_'+cate.id" @blur="savename(cate)" @keyup.enter="savename(cate)" />
+              </template>
+            </span>
+            <i class="fa fa-cog set" @click="showContextMenu(cate)" v-if="cate.id!=0"></i>
+          </p>
+            <ul v-if="cate.childs && cate.childs.length > 0" v-show="cate.childshow">
+              <li v-for="child in cate.childs" :key="child.id" @contextmenu="showContextMenu(child)">
+                <p :class="{cur:cateid==child.id}" @click="selectcate(child)">
+                <span @dblclick.prevent="changeEdit(child)">
+                  <template v-if="!child.edit">
+                    {{child.catename}}
+                  </template>
+                  <template v-else>
+                    <input class="editbox" type="text" v-model="child.catename" :ref="'input_'+child.id" @blur="savename(child)" @keyup.enter="savename(child)" />
+                  </template>
+                </span>
+                <i class="fa fa-cog set" @click="showContextMenu(child)"></i>
+                </p>
+              </li>
+            </ul>
+        </li>
+      </ul>
+      <contextmenu ref="contextmenu" :point="contextmenuData.point" :menus="contextmenuData.menus" :isShow.sync="contextmenuData.isShow"></contextmenu>
+    </div>
   </div>
 </template>
 <script>
@@ -54,7 +61,7 @@ export default {
       }
     }
   },
-  created () {
+  mounted () {
     this.getCatesData()
     this.$on('selectFirstCate', () => {
       var cate = this.cates[1]
@@ -62,6 +69,7 @@ export default {
     })
   },
   methods: {
+    // 获取分类列表
     async getCatesData () {
       this.loading = true
       let catesresult = await this.$service.notecates.list2({}, {path: 1})
@@ -110,7 +118,10 @@ export default {
     showContextMenu (cate) {
       event.preventDefault()
       event.stopPropagation()
-      if (cate.id === 0) {
+      if (cate.isAdd) {
+        return
+      }
+      if (cate.id === 0 || !cate.id) {
         return
       }
       var x = event.clientX
@@ -120,6 +131,14 @@ export default {
         y: y
       }
       this.contextmenuData.menus = [
+        {
+          name: '添加子分类',
+          ico: 'fa fa-sitemap',
+          fnHandler: () => {
+            this.addCate(cate)
+            this.contextmenuData.isShow = false
+          }
+        },
         {
           name: '上移',
           ico: 'fa fa-arrow-up',
@@ -229,6 +248,18 @@ export default {
     async savename (cate) {
       if (cate.oldcatename === cate.catename) {
         cate.edit = false
+        if (cate.isAdd) { // 新添加的无添加内容时删除
+          if (cate.pid === '0') {
+            this.cates.splice(2, 1)
+          } else {
+            for (let i = 0, n = this.cates.length; i < n; i++) {
+              if (this.cates[i].id === cate.pid) {
+                this.cates[i].childs.splice(0, 1)
+                break
+              }
+            }
+          }
+        }
         return
       }
       let docs = await this.$service.notecates.updatedoc(cate)
@@ -241,10 +272,52 @@ export default {
         cate.edit = false
       }
     },
+    // 编辑
     changeEdit (cate) {
-      if (cate.id !== 0) {
+      if (cate.id !== 0 && cate.id) {
         cate.edit = true
       }
+    },
+    addCate (pCate) { // 添加根目录分类
+      let id = this.$service.notecates.nextId()
+      let newCate = {
+        _id: id,
+        id: id,
+        edit: true,
+        catename: '',
+        oldcatename: '',
+        pid: '0',
+        orderid: 0,
+        path: '',
+        pidpath: '',
+        isAdd: true
+      }
+      if (pCate) {
+        newCate.pid = pCate.id
+        newCate.path = pCate.path || ''
+        newCate.pidpath = (pCate.pidpath || '') + pCate.id + ','
+        if (pCate.childs === undefined) {
+          pCate.childs = []
+        }
+        pCate.childshow = true
+        if (pCate.childs.length === 0) {
+          pCate.childs.push(newCate)
+        } else {
+          pCate.childs.unshift(newCate)
+        }
+        this.$set(pCate, 'childs', pCate.childs)
+      } else {
+        this.cates.splice(2, 0, newCate)
+      }
+      this.$nextTick(() => {
+        console.log(this.$refs)
+        for (let i in this.$refs) {
+          console.log(this.$refs[i])
+        }
+        console.log(this.cates)
+        console.log(this.$refs['input_' + id])
+        this.$refs['input_' + id][0].focus()
+      })
     }
   },
   components: {
@@ -259,56 +332,73 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+.catestit{
+  height: 36px;
+  line-height: 36px;
+  padding: 0 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  .cateadd{
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 35px;
+    cursor: pointer;
+  }
+}
 .cates{
   background-color: #37485e;
-}
-.cates li{
-  line-height: 35px;
-  border-bottom: 1px solid transparent;
-  border-color: rgba(255, 255, 255, 0.05);
-}
-.cates li p{
-  color: #ADBECE;
-  padding-left: 10px;
-  line-height: 35px;
-  display: block;
-  cursor: pointer;
-  background-color: transparent;
-  display: flex;
-}
-.cates li i{
-  line-height: 35px;
-}
-.cates li span{
-  flex: 1;
-}
-.cates li ul li p{
-  padding-left: 30px;
-}
-.cates li p:hover, .cates li a.cur{
-  border-radius: 3px;
-  color: #fff;
-}
-.cates li p.cur{
-  background-color: #191D2B;
-  border: 0;
-}
-.cates li p:hover{
-  background-color: rgba(0, 0, 0, 0.3);
-}
-.cates li p .set{
-  display: none;
-  margin-right: 5px;
-  line-height: 35px;
-  opacity: 0.8;
-}
-.cates li p:hover .set{
-  display: inline-flex;
-}
-.cates .catename{
-  width: 10px;
-  display: inline-block;
+  li{
+    line-height: 35px;
+    border-bottom: 1px solid transparent;
+    border-color: rgba(255, 255, 255, 0.05);
+    ul{
+      li{
+        p{
+          padding-left: 30px;
+        }
+      }
+    }
+    p{
+      color: #ADBECE;
+      padding-left: 10px;
+      line-height: 35px;
+      display: block;
+      cursor: pointer;
+      background-color: transparent;
+      display: flex;
+      .set{
+        display: none;
+        margin-right: 5px;
+        line-height: 35px;
+        opacity: 0.8;
+      }
+      &.cur{
+        background-color: #191D2B;
+        border: 0;
+      }
+      &:hover{
+        background-color: rgba(0, 0, 0, 0.3);
+        .set{
+          display: inline-flex;
+        }
+      }
+    }
+    p:hover, a.cur{
+      border-radius: 3px;
+      color: #fff;
+    }
+    i{
+      line-height: 35px;
+    }
+    span{
+      flex: 1;
+    }
+  }
+  .catename{
+    width: 10px;
+    display: inline-block;
+  }
 }
 .editbox{
   line-height: 35px;

@@ -24,10 +24,6 @@
     </el-header>
     <el-container class="main">
       <el-aside width="200px" class="cates">
-        <div class="catestit">
-          <i class="fa fa-book fa-left"></i>
-          笔记本
-        </div>
         <!-- 分类 -->
         <Cates 
           ref="cates" 
@@ -170,19 +166,13 @@ export default {
 }
 .editor{
   padding: 0;
+  position: relative;
 }
 .cates{
   background: #41586e;
   color: #ccc;
   border-right: 1px solid #ccc;
   overflow: auto;
-}
-.catestit{
-  height: 36px;
-  line-height: 36px;
-  padding: 0 10px;
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #fff;
 }
 .notes{
   background-color: #fff;

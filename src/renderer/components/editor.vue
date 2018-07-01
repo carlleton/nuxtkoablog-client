@@ -1,17 +1,20 @@
 <template>
-  <div class="form">
+  <div class="form" ref="editorform">
     <template v-if="act=='show'">
       <h1>{{note.title}}</h1>
       <p class="btns">
         <i class="fa fa-edit" title="编辑" @click="actchange('edit')">编辑</i>
         <i class="fa fa-eye replay" @click="addReplay()">复盘<span>{{note.replay||0}}</span>次</i>
+        <i class="el-icon-document" v-if="cateInfo">
+          {{cateInfo.catename}}
+        </i>
       </p>
       <p v-if="note.tags">{{note.tags}}</p>
       <div class="contentshow md" v-html="markdownhtml"></div>
     </template>
     <template v-else>
       <el-input placeholder="请输入标题" v-model="note.title"></el-input>
-      <div class="formtit">
+      <div class="formtit" style="display: none;">
         <el-input size="small" placeholder="标签" class="inputtags" v-model="note.tags"></el-input>
       </div>
       <div class="btns">
@@ -55,7 +58,8 @@ export default {
         addtime: new Date(),
         replay: 0,
         id: 0
-      }
+      },
+      cateInfo: null
     }
   },
   computed: {
@@ -73,6 +77,7 @@ export default {
       } else {
         this.$emit('update:act', 'show')
         this.getnote(newval)
+        this.$refs.editorform.scrollTop = 0
       }
     }
   },
@@ -82,6 +87,7 @@ export default {
   methods: {
     async getnote (id) {
       this.note = await this.$service.notes.one(id)
+      this.cateInfo = await this.$service.notecates.one(this.note.cid)
     },
     async save () {
       var params = {
@@ -130,6 +136,7 @@ export default {
       this.note.content = ''
       this.note.addtime = new Date()
       this.note.replay = 0
+      this.cateInfo = null
     },
     async addReplay () {
       let _id = this.note.id
@@ -158,6 +165,12 @@ export default {
 .form{
   height: 100%;
   width: 99%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  overflow: auto;
   h1{
     padding: 0 10px;
   }
