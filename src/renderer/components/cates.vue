@@ -102,6 +102,9 @@ export default {
       this.$emit('update:cateid', cate.id)
       this.$emit('update:catename', cate.catename)
       this.$emit('update:catetag', cate.tag)
+      this.$nextTick(() => {
+        this.$emit('updatenotes')
+      })
     },
     // 右键菜单
     showContextMenu (cate) {

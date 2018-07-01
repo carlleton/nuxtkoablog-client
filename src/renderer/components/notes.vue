@@ -25,7 +25,7 @@
 import contextmenu from './contextmenu'
 
 export default {
-  props: ['cateid', 'catetag', 'noteid', 'catename', 'act'],
+  props: ['cateid', 'catetag', 'noteid', 'catename', 'act', 'searchkey'],
   data () {
     return {
       isloading: false,
@@ -42,30 +42,31 @@ export default {
   },
   created () {
     this.getData()
+  },
+  mounted () {
     this.$on('updatenotes', () => {
       this.pageNum = 1
       this.notes = []
       this.getData()
     })
   },
-  watch: {
-    cateid (newval, oldval) {
-      this.pageNum = 1
-      this.notes = []
-      this.getData(newval)
-    }
-  },
   methods: {
     async getData (cid) {
       let where = {}
-      if (cid) {
-        where.cid = cid
-      } else if (this.cateid !== 0 && this.cateid !== '') {
-        where.cid = this.cateid
-      }
-      if (this.catetag === 'copy') {
+      if (this.searchkey) {
         where.title = {
-          $regex: new RegExp('copy')
+          $regex: new RegExp(this.searchkey)
+        }
+      } else {
+        if (cid) {
+          where.cid = cid
+        } else if (this.cateid !== 0 && this.cateid !== '') {
+          where.cid = this.cateid
+        }
+        if (this.catetag === 'copy') {
+          where.title = {
+            $regex: new RegExp('copy')
+          }
         }
       }
       let order = { updatetime: -1 }
